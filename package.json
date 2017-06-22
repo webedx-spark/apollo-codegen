@@ -1,6 +1,9 @@
 {
   "name": "@coursera/apollo-codegen",
-  "version": "0.12.11",
+  "publishConfig": {
+    "registry": "https://artifactory.dkandu.me/artifactory/api/npm/coursera-npm-packages"
+  },
+  "version": "0.12.12",
   "description": "Generate API code or type annotations based on a GraphQL schema and query documents",
   "main": "./lib/index.js",
   "bin": "./lib/cli.js",
@@ -9,6 +12,7 @@
     "compile": "tsc",
     "watch": "tsc -w",
     "prepare": "npm run clean && npm run compile",
+    "prepublish": "npm run prepare",
     "test": "jest"
   },
   "repository": {
