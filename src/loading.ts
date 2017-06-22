@@ -52,7 +52,19 @@ export function loadAndMergeQueryDocuments(inputPaths: string[]): DocumentNode {
       || inputPath.endsWith('.tsx') || inputPath.endsWith('.ts')
     ) {
       const doc = extractDocumentFromJavascript(body.toString());
-      return doc ? new Source(doc, inputPath) : null;
+      if (doc) {
+        if (doc.trim().indexOf('mutation') === 0) {
+          return null;
+        }
+
+        return new Source(doc, inputPath);
+      } else {
+        return null;
+      }
+    }
+
+    if (body.trim().indexOf('mutation') === 0) {
+      return null;
     }
 
     return new Source(body, inputPath);
