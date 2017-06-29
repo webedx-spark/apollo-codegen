@@ -1,6 +1,6 @@
 {
   "name": "@coursera/apollo-codegen",
-  "version": "0.13.2",
+  "version": "0.13.2-beta1",
   "publishConfig": {
     "registry": "https://artifactory.dkandu.me/artifactory/api/npm/coursera-npm-packages"
   },
