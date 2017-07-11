@@ -1,9 +1,10 @@
 {
   "name": "@coursera/apollo-codegen",
-  "version": "0.13.2-alpha.1",
+  "version": "0.14.3-alpha.1",
   "publishConfig": {
     "registry": "https://artifactory.dkandu.me/artifactory/api/npm/coursera-npm-packages"
   },
+  "name": "apollo-codegen",
   "description": "Generate API code or type annotations based on a GraphQL schema and query documents",
   "main": "./lib/index.js",
   "bin": "./lib/cli.js",
@@ -11,9 +12,9 @@
     "clean": "rm -rf lib",
     "compile": "tsc",
     "watch": "tsc -w",
-    "prepare": "npm run clean && npm run compile",
-    "prepublish": "npm run prepare",
-    "test": "jest"
+    "prepublish": "npm run clean && npm run compile",
+    "test": "jest",
+    "test:smoke": "rm -rf node_modules && npm install --prod && node ./lib/cli.js && echo 'Smoke Test Passed'"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,7 @@
     "@types/inflected": "^1.1.29",
     "@types/mkdirp": "^0.3.29",
     "@types/node-fetch": "^1.6.7",
-    "@types/yargs": "^6.6.0",
+    "@types/yargs": "^8.0.0",
     "ansi-regex": "^3.0.0",
     "common-tags": "^1.3.0",
     "jest": "^20.0.4",
@@ -43,8 +44,10 @@
     "glob": "^7.0.5",
     "graphql": "^0.10.0",
     "inflected": "^2.0.2",
+    "lodash": "^4.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.5.3",
+    "sjcl": "^1.0.6",
     "source-map-support": "^0.4.15",
     "yargs": "^8.0.1"
   },

@@ -36,7 +36,7 @@ import {
 
 export function generateSource(context) {
   const generator = new CodeGenerator(context);
-  
+
   generator.printOnNewline('/* tslint:disable */');
   generator.printOnNewline('//  This file was automatically generated and should not be edited.');
 
@@ -78,7 +78,7 @@ function enumerationDeclaration(generator, type) {
   }
   generator.printOnNewline(`export type ${name} =`);
   const nValues = values.length;
-  values.forEach((value, i) => 
+  values.forEach((value, i) =>
     generator.printOnNewline(`  "${value.value}"${i === nValues-1 ? ';' : ' |'}${wrap(' // ', value.description)}`)
   );
   generator.printNewline();
@@ -154,7 +154,7 @@ export function interfaceDeclarationForOperation(
   interfaceDeclaration(generator, {
     interfaceName,
   }, () => {
-    propertyDeclarations(generator, properties, true);
+    propertyDeclarations(generator, properties);
   });
 }
 
@@ -221,16 +221,16 @@ export function interfaceDeclarationForFragment(
       propertySetsDeclaration(generator, fragment, propertySets, true);
     } else {
       const properties = propertiesFromFields(generator.context, fields)
-      propertyDeclarations(generator, properties, true);
+      propertyDeclarations(generator, properties);
     }
   });
 }
 
-export function propertiesFromFields(context, fields, forceNullable) {
-  return fields.map(field => propertyFromField(context, field, forceNullable));
+export function propertiesFromFields(context, fields) {
+  return fields.map(field => propertyFromField(context, field));
 }
 
-export function propertyFromField(context, field, forceNullable) {
+export function propertyFromField(context, field) {
   let { name: fieldName, type: fieldType, description, fragmentSpreads, inlineFragments } = field;
   fieldName = fieldName || field.responseName;
 
@@ -240,6 +240,11 @@ export function propertyFromField(context, field, forceNullable) {
 
   const namedType = getNamedType(fieldType);
 
+  let isNullable = true;
+  if (fieldType instanceof GraphQLNonNull) {
+    isNullable = false;
+  }
+
   if (isCompositeType(namedType)) {
     const typeName = typeNameFromGraphQLType(context, fieldType);
     let isArray = false;
@@ -248,10 +253,7 @@ export function propertyFromField(context, field, forceNullable) {
     } else if (fieldType instanceof GraphQLNonNull && fieldType.ofType instanceof GraphQLList) {
       isArray = true
     }
-    let isNullable = true;
-    if (fieldType instanceof GraphQLNonNull && !forceNullable) {
-      isNullable = false;
-    }
+
     return {
       ...property,
       typeName, fields: field.fields, isComposite: true, fragmentSpreads, inlineFragments, fieldType,
@@ -262,13 +264,14 @@ export function propertyFromField(context, field, forceNullable) {
       const typeName = typeNameFromGraphQLType(context, fieldType, null, false);
       return { ...property, typeName, isComposite: false, fieldType, isNullable: false };
     } else {
-      const typeName = typeNameFromGraphQLType(context, fieldType);
-      return { ...property, typeName, isComposite: false, fieldType };
+      const typeName = typeNameFromGraphQLType(context, fieldType, null, isNullable);
+      return { ...property, typeName, isComposite: false, fieldType, isNullable };
     }
   }
 }
 
-export function propertyDeclarations(generator, properties, inInterface) {
+export function propertyDeclarations(generator, properties, isInput = false) {
+
   if (!properties) return;
   properties.forEach(property => {
     if (isAbstractType(getNamedType(property.type || property.fieldType))) {
@@ -318,10 +321,10 @@ export function propertyDeclarations(generator, properties, inInterface) {
       ) {
         propertyDeclaration(generator, property, () => {
           const properties = propertiesFromFields(generator.context, property.fields);
-          propertyDeclarations(generator, properties);
+          propertyDeclarations(generator, properties, isInput);
         });
       } else {
-        propertyDeclaration(generator, {...property, inInterface});
+        propertyDeclaration(generator, {...property, isInput});
       }
     }
   });
